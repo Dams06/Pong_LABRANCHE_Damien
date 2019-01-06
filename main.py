@@ -7,7 +7,7 @@ class Ball:
     def __init__(self, canvas):
         self.canvas = canvas
         self.id = canvas.create_oval(10,10, 30,30,fill = "black")
-        self.canvas.move(self.id, 245,100)
+        self.canvas.move(self.id, 200, 300)
         self.xspeed = random.randrange(-3,3) #valeur de la vitesse de la balle aléatoire au départ.
         self.yspeed = -1
 
@@ -27,6 +27,8 @@ class Ball:
 
 class Paddle:
     def __init__(self, canvas, top) :
+        self.moving_duration = 0
+        self.move = "false"
         self.canvas = canvas
         self.id = canvas.create_rectangle(0,0, 100, 10, fill="blue")
         if(top == "true"):
@@ -49,8 +51,12 @@ class Paddle:
 
     def move_left(self, evt):
         self.xspeed = -2
+        self.move = "true"
+        self.moving_duration = time.time()
     def move_right (self, evt):
         self.xspeed = 2
+        self.move = "true"
+        self.moving_duration = time.time()
 
 w = tkinter.Tk()
 w.title("Pong")
@@ -61,9 +67,13 @@ paddle_top = Paddle(can,"true")
 ball = Ball(can)
 
 while 1 :
+    if(paddle_bot.move == "true" and (time.time() - paddle_bot.moving_duration) >= 0.1):
+        paddle_bot.move = "false"
+        paddle_bot.xspeed = 0
     ball.move()
     paddle_bot.draw()
     paddle_top.draw()
+    w.update_idletasks()
     w.update()
     time.sleep(0.01)
 
